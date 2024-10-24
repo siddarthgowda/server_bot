@@ -16,6 +16,10 @@ def user_insert():
     return jsonify({'message':'user added sucessfully!!','user_id':str(result.inserted_id)})
     
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 
 if __name__ == '__main__':
