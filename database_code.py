@@ -1,61 +1,154 @@
 from pymongo import MongoClient
+from bson import ObjectId
 
-client=MongoClient('mongodb://localhost:27017/')
-db=client['zerodha']
-user_collection=db['user']#name,password
-customer_collection=db['customer_details']#name rgister mobile,opt, status 
-report_collection=db['report']
+#client=MongoClient('mongodb://localhost:27017/')
+#db=client['zerodha']
+#user_collection=db['user']
+#customer_collection=db['customer_details']
+#report_collection=db['report']
+#'mongodb://localhost:27017/','zerodha','user','customer_details','report'
 
-#find_one
-#find
-#insert_one
+#update_one
+#insert_one 
 #delete
-#update
+#find_one 
+#find
+
+url=('mongodb://localhost:27017/')
+client=MongoClient(url)['database']['collections']
+
+def convert_bson_Id(record):
+    record['_id']=ObjectId(record['_id'])
 
 
-def insert_user(self,user):
-    try:
-        data={"user_name":user.user_name,"password":user.password}
-        result=self.user_collection.insert_one(data)
-        print(f"user inserted with id :{result.inserted_id}")
-    except Exception as e:
-        print(f"error:{e}")
-
-def insert_customer_details(self,customer_details):
-    try:
-        data={"user_name":customer_details.user_name,"number":customer_details.number,"OTP":customer_details.OTP,"pofile_status":customer_details.profile_status}
-        result=self.customer_collection.insert_one(data)
-        print(f"customer_details inserted with id :{result.inserted_id}")
-    except Exception as e:
-        print(f"error:{e}")
-
-
-##
 
 class MongoDB:
+    def __init__(self,url,db,user,customer_details,report):
+        self.user=user
+        self.customer_details=customer_details
+        self.report=report
 
-    def _init_(self):
+
+        self.client=MongoClient(url)[db]
+        
+
+    def update_one(self,customer_details,report,collection_type):
         try:
-            self._mongo_db = self._database_config["mongo_api"]["zerodha"]
-
-            self.user_collection = self._database_config["mongo_api"]["user"]
-            self.customer_collection = self._database_config["mongo_api"]["customer_details"]
-            self.report_collection = self._database_config["mongo_api"]["report"]
-
-
-            port = "5001
-            url = "mongodb://localhost:27017/”
-            self.mongo_url = “ ”
-            # logger.info(self.mongo_url)
-            self.connect()
+            if collection_type=="user":
+                collection=self.user
+            elif collection_type=="customer_details":
+                collection=self.customer_details
+            elif collection_type=="report":
+                collection=self.report
             
+            db=self.client[collection]
 
+
+            if '_id' in customer_details:
+                customer_details=convert_bson_Id(customer_details)
+
+            if '_id' in report:
+                report=convert_bson_Id(report)
+
+            result=db.update_one(customer_details,{"$set":report})
+            print("customer_details and report are updated",result)
         except Exception as e:
-            print("Exception while loading the config-->" + str(e))
+            print("Exception error as {e}")
 
-    def connect(self,col_type=""):
+
+    def insert_one(self,report,collection_type):
         try:
-            if read:
-                self.mongo_conn_read = MongoClient(self.mongo_url)
-                self.user_collection_read = self.mongo_conn_read[self.zerodha][self.user_collection]
-                return self.user_collection_read
+            if collection_type=="user":
+                collection=self.user
+            elif collection_type=="customer_details":
+                collection=self.customer_details
+            elif collection_type=="report":
+                collection=self.report
+            
+            db=self.client[collection]
+
+            if 'id' in report:
+                report=convert_bson_Id(report)
+
+            result=db.report.insert_one(report)
+            print("report sucessfully  updated",result)
+        except Exception as e:
+            print("Exception error as {e}")
+
+    
+    
+    def remove_one(self,user,collection_type):
+        try:
+            if collection_type=="user":
+                collection=self.user
+            elif collection_type=="customer_details":
+                collection=self.customer_details
+            elif collection_type=="report":
+                collection=self.report
+            
+            db=self.client[collection]
+
+            if 'id' in user:
+                user=convert_bson_Id(user)
+            
+            if 'id' in customer_details:
+                customer_details=convert_bson_Id(customer_details)
+
+            result=db.delete_one(user,customer_details)
+            print("users removed sucessfully ",result)
+        except Exception as e:
+            print("Exception error as {e}")
+
+    def find_one(self,user,collection_type):
+        try:
+            if collection_type=="user":
+                collection=self.user
+            elif collection_type=="customer_details":
+                collection=self.customer_details
+            elif collection_type=="report":
+                collection=self.report
+            
+            db=self.client[collection]
+
+            if 'id' in user:
+                user=convert_bson_Id(user)
+
+            result=db.user.find_one()
+            print(result)
+        except Exception as e:
+            print("Exception error as {e}")
+    
+
+    def find(self,user,customer_details,report,collection_type):
+        try:
+            if collection_type=="user":
+                collection=self.user
+            elif collection_type=="customer_details":
+                collection=self.customer_details
+            elif collection_type=="report":
+                collection=self.report
+            
+            db=self.client[collection]
+
+            if 'id' in user:
+                user=convert_bson_Id(user)
+            
+            if 'id' in customer_details:
+                customer_details=convert_bson_Id(customer_details)
+            
+            if 'id' in report:
+                report=convert_bson_Id(report)
+
+            result=db.find(user,customer_details,report)
+            print(result)
+        except Exception as e:
+            print("Exception error as {e}")
+    
+
+    
+    
+if __name__=='__main__':
+    mongo_connection=MongoDB('mongodb://localhost:27017/','zerodha','user','customer_details','report')
+    
+
+    
