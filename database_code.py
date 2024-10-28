@@ -1,18 +1,6 @@
 from pymongo import MongoClient
 from bson import ObjectId
 
-#client=MongoClient('mongodb://localhost:27017/')
-#db=client['zerodha']
-#user_collection=db['user']
-#customer_collection=db['customer_details']
-#report_collection=db['report']
-#'mongodb://localhost:27017/','zerodha','user','customer_details','report'
-
-#update_one
-#insert_one 
-#delete
-#find_one 
-#find
 
 url=('mongodb://localhost:27017/')
 client=MongoClient(url)['database']['collections']
