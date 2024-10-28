@@ -150,11 +150,12 @@ if __name__=='__main__':
     
 
     #mongo_connection.insert_one({"name":"siddarth","phone_number":9113650004,"status":"active"},"user")
+    #mongo_connection.insert_one({"name":"sagar","age":27,"status":"active"},"customer_details")
     #mongo_connection.insert_one({"name":"siddarth","age":"","status":"active"},"user")
-
     #mongo_connection.update_one({"name":"siddarth"},{"phone_number":9482065549},"user")
     #mongo_connection.remove_one({"name":"varsha"},"user")
     #mongo_connection.remove_one({'_id':ObjectId('671f84e9bc9c7f84f9c4605e')},'user')
     #mongo_connection.find_one({'name':'siddarth'},'user')
+    #mongo_connection.find({'age':{'$lte':18}},'customer_details')
     #mongo_connection.find({}, 'user')
     
