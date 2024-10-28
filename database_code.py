@@ -44,19 +44,19 @@ class MongoDB:
             db=self.client[collection]
 
 
-            if '_id' in customer_details:
-                customer_details=convert_bson_Id(customer_details)
+            #if '_id' in condition:
+                #condition=convert_bson_Id(condition)
 
-            if '_id' in report:
-                report=convert_bson_Id(report)
+            if '_id' in record:
+                record=convert_bson_Id(record)
 
-            result=db.update_one(customer_details,{"$set":report})
+            result=db.update_one({"$set":record})
             print("customer_details and report are updated",result)
         except Exception as e:
             print("Exception error as {e}")
 
 
-    def insert_one(self,report,collection_type):
+    def insert_one(self,record,collection_type):
         try:
             if collection_type=="user":
                 collection=self.user
@@ -67,17 +67,17 @@ class MongoDB:
             
             db=self.client[collection]
 
-            if 'id' in report:
-                report=convert_bson_Id(report)
+            if 'id' in record:
+                record=convert_bson_Id(record)
 
-            result=db.report.insert_one(report)
+            result=db.insert_one(record)
             print("report sucessfully  updated",result)
         except Exception as e:
             print("Exception error as {e}")
 
     
     
-    def remove_one(self,user,collection_type):
+    def remove_one(self,record,collection_type):
         try:
             if collection_type=="user":
                 collection=self.user
@@ -88,13 +88,10 @@ class MongoDB:
             
             db=self.client[collection]
 
-            if 'id' in user:
-                user=convert_bson_Id(user)
-            
-            if 'id' in customer_details:
-                customer_details=convert_bson_Id(customer_details)
+            if 'id' in record:
+                record=convert_bson_Id(record)
 
-            result=db.delete_one(user,customer_details)
+            result=db.delete_one(record)
             print("users removed sucessfully ",result)
         except Exception as e:
             print("Exception error as {e}")
@@ -110,10 +107,10 @@ class MongoDB:
             
             db=self.client[collection]
 
-            if 'id' in user:
-                user=convert_bson_Id(user)
+            if 'id' in record:
+                record=convert_bson_Id(record)
 
-            result=db.user.find_one()
+            result=db.find_one(record)
             print(result)
         except Exception as e:
             print("Exception error as {e}")
@@ -130,16 +127,10 @@ class MongoDB:
             
             db=self.client[collection]
 
-            if 'id' in user:
-                user=convert_bson_Id(user)
-            
-            if 'id' in customer_details:
-                customer_details=convert_bson_Id(customer_details)
-            
-            if 'id' in report:
-                report=convert_bson_Id(report)
+            if 'id' in record:
+                record=convert_bson_Id(record)
 
-            result=db.find(user,customer_details,report)
+            result=db.find(record)
             print(result)
         except Exception as e:
             print("Exception error as {e}")
