@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 from bson import ObjectId
 
-
 url=('mongodb://localhost:27017/')
 client=MongoClient(url)['database']['collections']
 
@@ -87,6 +86,7 @@ class MongoDB:
             print("users removed sucessfully ",result.deleted_count)
         except Exception as e:
             print("Exception error as {e}")
+
 
     def find_one(self,cond,collection_type):
         try:
