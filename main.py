@@ -10,7 +10,7 @@ app=Flask(__name__)
 
 redis_data=RedisData()
 
-mongo_connection=MongoDB('mongodb://localhost:27017/','zerodha','user','customer_details','report')
+mongo_connection = MongoDB('mongodb://localhost:27017/', 'zerodha', 'user', 'customer_details', 'report')
 
 
 @app.route("/register", methods=['POST'])
@@ -44,8 +44,7 @@ def register():
         print("errror:Email is already registered")
         return jsonify({'error': 'Email is already registered'})
     
-    
-    if mongo_connection.find_one({"username": username},collection_type='user'):
+    elif mongo_connection.find_one({"username": username},collection_type='user'):
         print("errror:Email is already registered")
         return jsonify({'error': 'Username is already taken'})
 

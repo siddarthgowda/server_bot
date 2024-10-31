@@ -98,15 +98,16 @@ class MongoDB:
                 collection=self.report
             
             db=self.client[collection]
-
+ 
             if '_id' in cond:
                 cond=convert_bson_Id(cond)
 
             result=db.find_one(cond)
             print(result)
+            return result
         except Exception as e:
             print("Exception error as {e}")
-    
+            return None
 
     def find(self,cond,collection_type):
         try:
