@@ -4,7 +4,6 @@ import requests
 def get_response(user_input, conversation_history):
     url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=YOUR_API_KEY"
     
-    # Define the system prompt with the objectives, instructions, response guidelines, and FAQs
     system_prompt = '''{
         "role": "system",
         "content": "Objective: 

@@ -99,7 +99,7 @@ class MongoDB:
             
             db=self.client[collection]
 
-            if 'id' in cond:
+            if '_id' in cond:
                 cond=convert_bson_Id(cond)
 
             result=db.find_one(cond)
