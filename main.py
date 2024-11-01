@@ -61,6 +61,13 @@ def register():
         "phonenumber": phonenumber
     },"user")
 
+    mongo_connection.insert_one({
+        "username": username,
+        "password": pwd_hash,   
+        "email": email,
+        "phonenumber": phonenumber
+    },"customer_details")
+
     return jsonify({"message": "User registered successfully"})
 
 
@@ -71,7 +78,7 @@ def login():
     print("User found:", user)
     print("Password provided:", data.get('password'))
     
-    unique=uuid.uuid3()
+    unique=uuid.uuid3(uuid.NAMESPACE_DNS,user['username'])
     if not user or not check_password_hash(user['password'], data.get('password')):
         return jsonify({'message':'invalid username and password'})
     #updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
@@ -80,36 +87,54 @@ def login():
 
 @app.route("/initial",methods=['GET'])
 def initial():
-    json_data=request.json
-
-    data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
-    unique=json_data.get("unique_id")
-
-    conversation_start=datetime.datetime()
-    conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
-
-    redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
-
-    return{"message":"hi,welcome to zerodha ,how can i help you?"}
+    try:
+        json_data=request.json
+        print(f"we are inside initial message{json_data}")
 
 
-@app.route("/chat",methods=["GET"])
+        data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
+        unique=json_data.get("unique_id")
+
+        conversation_start=datetime.datetime.now()
+        conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
+
+        redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
+        
+        return jsonify({"message":"hi,welcome to zerodha ,how can i help you?"})
+    except Exception as e:
+        print(f"we have an exception{e}")
+        return jsonify({"message":"hi,welcome to zerodha ,how can i help you?"})
+
+
+
+@app.route("/chat",methods=["POST"])
 def chat():
-    user_text=(request.json).get("user_text")
-    unique_id=(request.json).get("unique_id")
-    redis_updated_data=json.loads(redis_data.get_data(unique_id))
+    try:
+        user_text=(request.json).get("user_text")
+        unique_id=(request.json).get("unique_id")
 
-    conversation=redis_updated_data.get("conversation_history")
-    user_data=redis_updated_data.get("user_data")
+        print(redis_data.get_data(unique_id))
+        redis_updated_data=json.loads(redis_data.get_data(unique_id))
 
-    bot_responce=get_response(user_text,conversation,user_data)
+        conversation=redis_updated_data.get("conversation_history")
+        user_data=redis_updated_data.get("user_data")
 
-    if len(bot_responce.split('|')>1):
-        if bot_responce('|')[1]=='EOC':
-            mongo_connection.insert_one(redis_updated_data,collection_type='report')
+        bot_responce=get_response(user_text,conversation,user_data)
 
-    conversation.append({'role': 'user', 'content': user_text})
-    conversation.append({'role': 'user', 'content': bot_responce})
+        if len(bot_responce.split('|'))>1:
+            if bot_responce('|')[1]=='EOC':
+                mongo_connection.insert_one(redis_updated_data,collection_type='report')
+
+        conversation.append({'role': 'user', 'content': user_text})
+        conversation.append({'role': 'assistant', 'content': bot_responce})
+
+        redis_data.set_data(unique_id,json.dumps(redis_updated_data))
+        return jsonify({"message":bot_responce})
+    except Exception as e:
+        print(f"we have an exception{e}")
+        return {"message":bot_responce}
+
+
 
 @app.route('/')
 def index():

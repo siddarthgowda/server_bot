@@ -2,7 +2,8 @@ import json
 import requests
 
 def get_response(user_input, conversation_history,user_data):
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=YOUR_API_KEY"
+    API_KEY="AIzaSyD3mYaKtwyRb3RMu27nU2Z07AjI3Y8YSmk"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
     
     system_prompt = { f'''
         "role": "system",
@@ -149,14 +150,14 @@ def get_response(user_input, conversation_history,user_data):
     conversation_history.append({'role': 'user', 'content': user_input})
 
     # Prepare the conversation text for API request
-    history_text = ''.join([f"{entry['role']}: {entry['content']} " for entry in conversation_history])
+    #history_text = ''.join([f"{entry['role']}: {entry['content']} " for entry in conversation_history])
 
     payload = json.dumps({
         "contents": [
             {
                 "parts": [
                     {
-                        "text": f"{system_prompt}\n\n{history_text}"
+                        "text": f"{system_prompt}\n\n{conversation_history}"
                     }
                 ]
             }

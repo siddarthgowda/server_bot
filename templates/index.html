@@ -81,7 +81,7 @@
         <input type="text" id="phonenumber" placeholder="Phone Number" required>
         <input type="password" id="password" placeholder="Password" required>
         <button onclick="registerUser()">Register</button>
-        <div class="message" id="registerErrorMessage"></div> <!-- Error message container -->
+        <div class="message" id="registerErrorMessage"></div>
         <div class="toggle-btn" onclick="switchTab('loginTab')">Already have an account? Login here</div>
     </div>
 
@@ -91,14 +91,14 @@
         <input type="text" id="loginUsername" placeholder="Username" required>
         <input type="password" id="loginPassword" placeholder="Password" required>
         <button onclick="loginUser()">Login</button>
-        <div class="message" id="loginErrorMessage"></div> <!-- Error message container -->
+        <div class="message" id="loginErrorMessage"></div>
         <div class="toggle-btn" onclick="switchTab('registerTab')">Don't have an account? Register here</div>
     </div>
 
     <!-- Chat Box -->
     <div id="chatTab" class="tab">
         <h3>Chat with Zerodha Bot</h3>
-        <div class="message" id="responseMessage"></div>
+        <div class="message" id="chatHistory"></div>
         <input type="text" id="userText" placeholder="Type a message...">
         <button onclick="sendMessage()">Send</button>
     </div>
@@ -129,19 +129,11 @@
         });
         
         const result = await response.json();
-        
-        // Check for error message
         const registerErrorMessage = document.getElementById('registerErrorMessage');
-        registerErrorMessage.innerText = ''; // Clear previous messages
+        registerErrorMessage.innerText = result.error || result.message;
+        registerErrorMessage.style.color = result.error ? "red" : "green";
 
-        if (result.error) {
-            registerErrorMessage.innerText = result.error;
-            registerErrorMessage.style.color = "red";  // Style error message in red
-        } else if (result.message) {
-            registerErrorMessage.innerText = result.message; // Show success message
-            registerErrorMessage.style.color = "green"; // Style success message in green
-            switchTab('loginTab');  // Navigate to the login tab if registration is successful
-        }
+        if (!result.error) switchTab('loginTab');
     }
 
     async function loginUser() {
@@ -159,19 +151,27 @@
         });
         
         const result = await response.json();
-
-        // Check for login message
         const loginErrorMessage = document.getElementById('loginErrorMessage');
-        loginErrorMessage.innerText = ''; // Clear previous messages
-        
-        if (result.error) {
-            loginErrorMessage.innerText = result.error;
-            loginErrorMessage.style.color = "red";  // Style error message in red
-        } else if (result.message) {
-            loginErrorMessage.innerText = result.message; // Show success message
+        loginErrorMessage.innerText = result.error || result.message;
+        loginErrorMessage.style.color = result.error ? "red" : "green";
+
+        if (!result.error) {
             localStorage.setItem('unique_id', result.unique_id);
-            switchTab('chatTab');  // Navigate to the chat tab if login is successful
+            switchTab('chatTab');
+            initializeChat();
         }
+    }
+
+    async function initializeChat() {
+        const unique_id = localStorage.getItem('unique_id');
+        const response = await fetch('/initial', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ unique_id })
+        });
+        
+        const data = await response.json();
+        document.getElementById('chatHistory').innerHTML += `<div><strong>Bot:</strong> ${data.message}</div>`;
     }
 
     async function sendMessage() {
@@ -180,15 +180,14 @@
 
         const response = await fetch('/chat', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ user_text: userText, unique_id: unique_id })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_text: userText, unique_id })
         });
         
         const result = await response.json();
-        document.getElementById('responseMessage').innerText = result.response;
-        document.getElementById('userText').value = ''; // Clear input after sending
+        document.getElementById('chatHistory').innerHTML += `<div><strong>You:</strong> ${userText}</div>`;
+        document.getElementById('chatHistory').innerHTML += `<div><strong>Bot:</strong> ${result.response}</div>`;
+        document.getElementById('userText').value = '';
     }
 </script>
 
