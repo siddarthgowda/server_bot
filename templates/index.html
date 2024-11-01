@@ -3,173 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register and Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Zerodha Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
         }
         .container {
-            width: 300px;
-            margin: auto;
-            background: white;
+            width: 350px;
+            background-color: #fff;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
         }
-        .form-group {
-            margin-bottom: 15px;
+        h2 {
+            color: #333;
         }
-        .form-group label {
+        .tab {
+            display: none;
+        }
+        .tab.active {
             display: block;
-            margin-bottom: 5px;
         }
-        .form-group input {
+        input[type="text"], input[type="password"], input[type="email"] {
             width: 100%;
             padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 4px;
         }
-        .btn {
+        button {
             width: 100%;
             padding: 10px;
             background-color: #28a745;
+            color: #fff;
             border: none;
-            color: white;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
         }
-        .btn:hover {
+        button:hover {
             background-color: #218838;
         }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .success-message {
-            color: green;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .toggle {
-            text-align: center;
+        .message {
             margin-top: 20px;
+            color: red;
+        }
+        .toggle-btn {
+            color: #007bff;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .toggle-btn:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <h1>Welcome to Zerodha</h1>
+<div class="container">
+    <h2>Zerodha Chatbot</h2>
 
-    <div class="container">
-        <div id="register-form">
-            <h2>Register</h2>
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" placeholder="Enter username">
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" placeholder="Enter email">
-            </div>
-            <div class="form-group">
-                <label for="phonenumber">Phone Number:</label>
-                <input type="text" id="phonenumber" placeholder="Enter phone number">
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" placeholder="Enter password">
-            </div>
-            <button class="btn" onclick="register()">Register</button>
-            <div class="error-message" id="register-error"></div>
-            <div class="success-message" id="register-success"></div>
-        </div>
-
-        <div id="login-form" style="display:none;">
-            <h2>Login</h2>
-            <div class="form-group">
-                <label for="login-username">Username:</label>
-                <input type="text" id="login-username" placeholder="Enter username">
-            </div>
-            <div class="form-group">
-                <label for="login-password">Password:</label>
-                <input type="password" id="login-password" placeholder="Enter password">
-            </div>
-            <button class="btn" onclick="login()">Login</button>
-            <div class="error-message" id="login-error"></div>
-            <div class="success-message" id="login-success"></div>
-        </div>
-
-        <div class="toggle">
-            <span id="toggle-text" onclick="toggleForms()" style="cursor:pointer;">Already have an account? Login</span>
-        </div>
+    <!-- Registration Form -->
+    <div id="registerTab" class="tab active">
+        <h3>Register</h3>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="phonenumber" placeholder="Phone Number" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="registerUser()">Register</button>
+        <div class="message" id="registerErrorMessage"></div> <!-- Error message container -->
+        <div class="toggle-btn" onclick="switchTab('loginTab')">Already have an account? Login here</div>
     </div>
 
-    <script>
-        async function register() {
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const phonenumber = document.getElementById('phonenumber').value;
-            const password = document.getElementById('password').value;
+    <!-- Login Form -->
+    <div id="loginTab" class="tab">
+        <h3>Login</h3>
+        <input type="text" id="loginUsername" placeholder="Username" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button onclick="loginUser()">Login</button>
+        <div class="message" id="loginErrorMessage"></div> <!-- Error message container -->
+        <div class="toggle-btn" onclick="switchTab('registerTab')">Don't have an account? Register here</div>
+    </div>
 
-            const response = await fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, email, phonenumber, password }),
-            });
+    <!-- Chat Box -->
+    <div id="chatTab" class="tab">
+        <h3>Chat with Zerodha Bot</h3>
+        <div class="message" id="responseMessage"></div>
+        <input type="text" id="userText" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
-            const result = await response.json();
-            document.getElementById('register-error').innerText = result.error || '';
-            document.getElementById('register-success').innerText = result.message || '';
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    async function registerUser() {
+        const data = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            phonenumber: document.getElementById('phonenumber').value,
+            password: document.getElementById('password').value
+        };
+        
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        // Check for error message
+        const registerErrorMessage = document.getElementById('registerErrorMessage');
+        registerErrorMessage.innerText = ''; // Clear previous messages
+
+        if (result.error) {
+            registerErrorMessage.innerText = result.error;
+            registerErrorMessage.style.color = "red";  // Style error message in red
+        } else if (result.message) {
+            registerErrorMessage.innerText = result.message; // Show success message
+            registerErrorMessage.style.color = "green"; // Style success message in green
+            switchTab('loginTab');  // Navigate to the login tab if registration is successful
         }
+    }
 
-        async function login() {
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
+    async function loginUser() {
+        const data = {
+            username: document.getElementById('loginUsername').value,
+            password: document.getElementById('loginPassword').value
+        };
+        
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
 
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
-
-            const result = await response.json();
-            document.getElementById('login-error').innerText = result.message || '';
-            document.getElementById('login-success').innerText = result.success || '';
+        // Check for login message
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        loginErrorMessage.innerText = ''; // Clear previous messages
+        
+        if (result.error) {
+            loginErrorMessage.innerText = result.error;
+            loginErrorMessage.style.color = "red";  // Style error message in red
+        } else if (result.message) {
+            loginErrorMessage.innerText = result.message; // Show success message
+            localStorage.setItem('unique_id', result.unique_id);
+            switchTab('chatTab');  // Navigate to the chat tab if login is successful
         }
+    }
 
-        function toggleForms() {
-            const registerForm = document.getElementById('register-form');
-            const loginForm = document.getElementById('login-form');
-            const toggleText = document.getElementById('toggle-text');
+    async function sendMessage() {
+        const userText = document.getElementById('userText').value;
+        const unique_id = localStorage.getItem('unique_id');
 
-            if (registerForm.style.display === 'none') {
-                registerForm.style.display = 'block';
-                loginForm.style.display = 'none';
-                toggleText.innerText = 'Already have an account? Login';
-            } else {
-                registerForm.style.display = 'none';
-                loginForm.style.display = 'block';
-                toggleText.innerText = 'Don\'t have an account? Register';
-            }
-
-            // Clear any messages
-            document.getElementById('register-error').innerText = '';
-            document.getElementById('register-success').innerText = '';
-            document.getElementById('login-error').innerText = '';
-            document.getElementById('login-success').innerText = '';
-        }
-    </script>
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_text: userText, unique_id: unique_id })
+        });
+        
+        const result = await response.json();
+        document.getElementById('responseMessage').innerText = result.response;
+        document.getElementById('userText').value = ''; // Clear input after sending
+    }
+</script>
 
 </body>
 </html>

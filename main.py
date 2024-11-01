@@ -45,7 +45,7 @@ def register():
         print("errror:Email is already registered")
         return jsonify({'error': 'Email is already registered'})
     
-    #elif mongo_connection.find_one({"username": username},collection_type='user'):
+    elif mongo_connection.find_one({"username": username},collection_type='user'):
         print("errror:Email is already registered")
         return jsonify({'error': 'Username is already taken'})
     elif mongo_connection.find_one({"phonenumber": phonenumber},collection_type='user'):
@@ -93,7 +93,23 @@ def initial():
     return{"message":"hi,welcome to zerodha ,how can i help you?"}
 
 
+@app.route("/chat",methods=["GET"])
+def chat():
+    user_text=(request.json).get("user_text")
+    unique_id=(request.json).get("unique_id")
+    redis_updated_data=json.loads(redis_data.get_data(unique_id))
 
+    conversation=redis_updated_data.get("conversation_history")
+    user_data=redis_updated_data.get("user_data")
+
+    bot_responce=get_response(user_text,conversation,user_data)
+
+    if len(bot_responce.split('|')>1):
+        if bot_responce('|')[1]=='EOC':
+            mongo_connection.insert_one(redis_updated_data,collection_type='report')
+
+    conversation.append({'role': 'user', 'content': user_text})
+    conversation.append({'role': 'user', 'content': bot_responce})
 
 @app.route('/')
 def index():
