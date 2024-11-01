@@ -38,8 +38,10 @@ class MongoDB:
 
             result=db.update_one(cond,{"$set":record})
             print("customer_details and report are updated",result)
+            return result
         except Exception as e:
             print("Exception error as {e}")
+            return None
 
 
     def insert_one(self, record, collection_type):
@@ -58,8 +60,10 @@ class MongoDB:
 
             result = db.insert_one(record)
             print("report successfully updated", result)
+            return result
         except Exception as e:
             print("Exception error as {e}")
+            return None
 
 
     
@@ -84,8 +88,10 @@ class MongoDB:
 
             result=db.delete_one(cond)
             print("users removed sucessfully ",result.deleted_count)
+            return result
         except Exception as e:
             print("Exception error as {e}")
+            return None
 
 
     def find_one(self,cond,collection_type):
@@ -128,8 +134,10 @@ class MongoDB:
             
             for document in result:
                 print(document)
+            return result
         except Exception as e:
             print("Exception error as {e}")
+            return None
     
 
     

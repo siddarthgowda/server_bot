@@ -1,4 +1,3 @@
-
 import redis
 import json
 
@@ -6,14 +5,15 @@ class RedisData:
     def __init__(self):
         self.r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
-    def set_conversation_history(self, key, conversation_history): 
-        self.r.set(key, json.dumps(conversation_history)) 
+    def set_data(self, key, data): 
+        self.r.set(key, json.dumps(data)) 
 
-    def setex_checking_history(self, key, conversation_history):
-        self.r.setex(key, 60, json.dumps(conversation_history))
+    def setex_set_data(self, key, data):
+        self.r.setex(key, 60, json.dumps(data))
  
-    def get_conversation_history(self, key):
-        conversation_history = self.r.get(key)
-        if conversation_history:
-            return json.loads(conversation_history)
+    def get_data(self, key):
+        data = self.r.get(key)
+        if data:
+            return json.loads(data)
         return []
+

@@ -4,7 +4,8 @@ from redis_con import RedisData
 from werkzeug.security import generate_password_hash, check_password_hash
 import validators
 from database_code import MongoDB
-
+import uuid,json
+import datetime
 
 app=Flask(__name__)
 
@@ -44,9 +45,12 @@ def register():
         print("errror:Email is already registered")
         return jsonify({'error': 'Email is already registered'})
     
-    elif mongo_connection.find_one({"username": username},collection_type='user'):
+    #elif mongo_connection.find_one({"username": username},collection_type='user'):
         print("errror:Email is already registered")
         return jsonify({'error': 'Username is already taken'})
+    elif mongo_connection.find_one({"phonenumber": phonenumber},collection_type='user'):
+        print("errror:phonenumber is already registered")
+        return jsonify({'error': 'phonenumber is already taken'})
 
    
     pwd_hash = generate_password_hash(password)
@@ -67,21 +71,26 @@ def login():
     print("User found:", user)
     print("Password provided:", data.get('password'))
     
+    unique=uuid.uuid3()
     if not user or not check_password_hash(user['password'], data.get('password')):
         return jsonify({'message':'invalid username and password'})
-    return jsonify({'message':"login sucessful"})
+    #updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
+    return jsonify({'message':"login sucessful","unique_id":unique})
 
 
 @app.route("/initial",methods=['GET'])
 def initial():
-    conversation_history=[]
-    #find 
+    json_data=request.json
+
+    data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
+    unique=json_data.get("unique_id")
+
+    conversation_start=datetime.datetime()
     conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
-    
-    redis_data.set_conversation_history("conversation_history",conversation_history)
+
+    redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
 
     return{"message":"hi,welcome to zerodha ,how can i help you?"}
-
 
 
 
