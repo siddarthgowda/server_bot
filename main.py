@@ -75,41 +75,38 @@ def register():
 def login():
     try:
         data=request.json
-        user=mongo_connection.find_one({'username':data.get('username')},collection_type='user')
+        user=data.get("username")
+        user_data=mongo_connection.find_one({'username':user},collection_type='user')
         print("User found:", user)
-        print("Password provided:", data.get('password'))
+        print("Password provided:", user_data.get('password'))
         
         
         unique=str(uuid.uuid4())
-        if not user or not check_password_hash(user['password'], data.get('password')):
+        if not user or not check_password_hash(user_data['password'], data.get('password')):
             return jsonify({'message':'invalid username and password'})
         
-        json_data=mongo_connection.find_one({"email":data.get('email')},collection_type="customer_details")
-
-        conversation_start=datetime.datetime.now()
-        conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
-
-        redis_data.set_data({"conversation_history":conversation_history,"user_data":json_data,"conversation_start":conversation_start})
-
-        #updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
+        updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
+        print({'message':"login sucessful","unique_id":unique})
         return jsonify({'message':"login sucessful","unique_id":unique})
     except Exception as e:
         print(f"we have a exception as {e}")
         return jsonify({"message":"login failed"})
 
+
+
 @app.route("/initial",methods=['GET'])
 def initial():
     try: 
-        json_data=request.json
-        print(f"we are inside initial message{json_data}")
+        data=request.args
+        print(f"we are inside initial message{data}")
 
-        data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
-        unique=json_data.get("unique_id")
+        #data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
+        #unique=json_data.get("unique_id")
 
-        conversation_start=datetime.datetime.now()
-        conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
+       # conversation_start=datetime.datetime.now()
+       # conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
 
-        redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
+       # redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
         
         return jsonify({"message":"hi,welcome to zerodha ,how can i help you?"})
     except Exception as e:

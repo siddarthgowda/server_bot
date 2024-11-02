@@ -193,12 +193,10 @@
     }
     async function initializeChat() {
     const unique_id = localStorage.getItem('unique_id');
-    const email = localStorage.getItem('email'); // Assuming email is also stored in localStorage
+    console.log("we have unique id ${unique_id}")
 
-    const response = await fetch(`/initial?unique_id=${encodeURIComponent(unique_id)}&email=${encodeURIComponent(email)}`, {
+    const response = await fetch('/initial?unique_id=${unique_id}', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(unique_id)
     });
 
     if (response.ok) {
@@ -222,7 +220,7 @@
         const response = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_text: userText, unique_id })
+            body: JSON.stringify({ user_text: userText, unique_id:unique_id })
         });
         
         const result = await response.json();
