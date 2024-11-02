@@ -84,12 +84,12 @@ def login():
         if not user or not check_password_hash(user['password'], data.get('password')):
             return jsonify({'message':'invalid username and password'})
         
-        data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
-        unique=json_data.get("unique_id")
+        json_data=mongo_connection.find_one({"email":data.get('email')},collection_type="customer_details")
+
         conversation_start=datetime.datetime.now()
         conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
 
-        redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
+        redis_data.set_data({"conversation_history":conversation_history,"user_data":json_data,"conversation_start":conversation_start})
 
         #updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
         return jsonify({'message':"login sucessful","unique_id":unique})

@@ -191,17 +191,24 @@
             initializeChat();
         }
     }
-
     async function initializeChat() {
-        const unique_id = localStorage.getItem('unique_id');
-        const response = await fetch('/initial', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        
+    const unique_id = localStorage.getItem('unique_id');
+    const email = localStorage.getItem('email'); // Assuming email is also stored in localStorage
+
+    const response = await fetch(`/initial?unique_id=${encodeURIComponent(unique_id)}&email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(unique_id)
+    });
+
+    if (response.ok) {
         const data = await response.json();
         document.getElementById('chatHistory').innerHTML += `<div><strong>Bot:</strong> ${data.message}</div>`;
+    } else {
+        console.error("Failed to fetch initial message", response.status, response.statusText);
     }
+}
+
 
     async function openChat() {
         document.getElementById('chatTab').style.display = 'block';
