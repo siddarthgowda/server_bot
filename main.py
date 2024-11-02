@@ -73,24 +73,35 @@ def register():
 
 @app.route('/login',methods=['post'])
 def login():
-    data=request.json
-    user=mongo_connection.find_one({'username':data.get('username')},collection_type='user')
-    print("User found:", user)
-    print("Password provided:", data.get('password'))
-    
-    unique=uuid.uuid3(uuid.NAMESPACE_DNS,user['username'])
-    if not user or not check_password_hash(user['password'], data.get('password')):
-        return jsonify({'message':'invalid username and password'})
-    #updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
-    return jsonify({'message':"login sucessful","unique_id":unique})
+    try:
+        data=request.json
+        user=mongo_connection.find_one({'username':data.get('username')},collection_type='user')
+        print("User found:", user)
+        print("Password provided:", data.get('password'))
+        
+        
+        unique=str(uuid.uuid4())
+        if not user or not check_password_hash(user['password'], data.get('password')):
+            return jsonify({'message':'invalid username and password'})
+        
+        data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
+        unique=json_data.get("unique_id")
+        conversation_start=datetime.datetime.now()
+        conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
 
+        redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
+
+        #updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
+        return jsonify({'message':"login sucessful","unique_id":unique})
+    except Exception as e:
+        print(f"we have a exception as {e}")
+        return jsonify({"message":"login failed"})
 
 @app.route("/initial",methods=['GET'])
 def initial():
-    try:
+    try: 
         json_data=request.json
         print(f"we are inside initial message{json_data}")
-
 
         data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
         unique=json_data.get("unique_id")
@@ -109,12 +120,13 @@ def initial():
 
 @app.route("/chat",methods=["POST"])
 def chat():
+    print(f"we have user data as{request.json}")
     try:
         user_text=(request.json).get("user_text")
         unique_id=(request.json).get("unique_id")
 
         print(redis_data.get_data(unique_id))
-        redis_updated_data=json.loads(redis_data.get_data(unique_id))
+        redis_updated_data=redis_data.get_data(unique_id)
 
         conversation=redis_updated_data.get("conversation_history")
         user_data=redis_updated_data.get("user_data")
@@ -127,12 +139,12 @@ def chat():
 
         conversation.append({'role': 'user', 'content': user_text})
         conversation.append({'role': 'assistant', 'content': bot_responce})
+        print(bot_responce)
 
-        redis_data.set_data(unique_id,json.dumps(redis_updated_data))
         return jsonify({"message":bot_responce})
     except Exception as e:
         print(f"we have an exception{e}")
-        return {"message":bot_responce}
+        return {"message":e}
 
 
 
