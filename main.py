@@ -111,7 +111,7 @@ def initial():
             del data['_id']
 
         conversation_start=str(datetime.datetime.now())
-        conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
+        conversation_history=[{"assistant":"Hey, Welcome to zerodha ,how can i help you?"}]
 
         redis_data.setex_set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
         
@@ -137,25 +137,25 @@ def chat():
         conversation.append({'user': user_text})
 
 
-        api_responce=get_response(user_text,conversation,user_data)
+        api_responce=get_response(conversation,user_data)
         bot_responce=api_responce
 
         if len(bot_responce.split('|'))>1:
-            if bot_responce('|')[1]=='EOC':
+            if bot_responce('|')[1] in ['EOC','TTA']:
                 mongo_connection.insert_one(redis_updated_data,collection_type='report')
 
         conversation.append({'assistant': bot_responce})
-        print(bot_responce)
 
         new = {"conversation_history":conversation}
-        new_data = {*redis_updated_data,*new}
+        new_data = {**redis_updated_data,**new}
 
         redis_data.setex_set_data(unique_id,new_data)
 
         return jsonify({"message":bot_responce})
+    
     except Exception as e:
-        print(f"we have an exception{e}")
-        return {"message":e}
+        print(f"we have an exception in chat as ---> {str(e)}")
+        return {"message": str(e)}
 
 
 

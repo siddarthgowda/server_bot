@@ -55,7 +55,7 @@
         }
         .message {
             margin-top: 20px;
-            color: red;
+            color: black;
         }
         .toggle-btn {
             color: #007bff;
@@ -228,7 +228,7 @@
         
         const result = await response.json();
         document.getElementById('chatHistory').innerHTML += `<div><strong>You:</strong> ${userText}</div>`;
-        document.getElementById('chatHistory').innerHTML += `<div><strong>assistant:</strong> ${result.response}</div>`;
+        document.getElementById('chatHistory').innerHTML += `<div><strong>assistant:</strong> ${result.message}</div>`;
         document.getElementById('userText').value = '';
     }
 </script>
