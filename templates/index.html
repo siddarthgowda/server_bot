@@ -70,6 +70,7 @@
         #chatIcon {
             position: fixed;
             bottom: 20px;
+            width: 100px;
             right: 20px;
             background-color: #28a745;
             color: white;
@@ -86,6 +87,7 @@
             bottom: 80px;
             right: 20px;
             width: 350px;
+            height: 500px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 8px;
@@ -188,20 +190,21 @@
         if (!result.error) {
             localStorage.setItem('unique_id', result.unique_id);
             switchTab('chatTab');
-            initializeChat();
         }
     }
     async function initializeChat() {
     const unique_id = localStorage.getItem('unique_id');
-    console.log("we have unique id ${unique_id}")
+    console.log(unique_id)
 
-    const response = await fetch('/initial?unique_id=${unique_id}', {
-        method: 'GET',
+    const response = await fetch('/initial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({unique_id:unique_id })
     });
 
     if (response.ok) {
         const data = await response.json();
-        document.getElementById('chatHistory').innerHTML += `<div><strong>Bot:</strong> ${data.message}</div>`;
+        document.getElementById('chatHistory').innerHTML += `<div><strong>assistant:</strong> ${data.message}</div>`;
     } else {
         console.error("Failed to fetch initial message", response.status, response.statusText);
     }
@@ -225,7 +228,7 @@
         
         const result = await response.json();
         document.getElementById('chatHistory').innerHTML += `<div><strong>You:</strong> ${userText}</div>`;
-        document.getElementById('chatHistory').innerHTML += `<div><strong>Bot:</strong> ${result.response}</div>`;
+        document.getElementById('chatHistory').innerHTML += `<div><strong>assistant:</strong> ${result.response}</div>`;
         document.getElementById('userText').value = '';
     }
 </script>

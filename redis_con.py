@@ -9,7 +9,7 @@ class RedisData:
         self.r.set(key, json.dumps(data)) 
 
     def setex_set_data(self, key, data):
-        self.r.setex(key, 60, json.dumps(data))
+        self.r.setex(key, 43200, json.dumps(data))
  
     def get_data(self, key):
         data = self.r.get(key)

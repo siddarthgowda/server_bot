@@ -4,12 +4,14 @@ from redis_con import RedisData
 from werkzeug.security import generate_password_hash, check_password_hash
 import validators
 from database_code import MongoDB
-import uuid,json
+import uuid
+import json
 import datetime
 
 app=Flask(__name__)
 
 redis_data=RedisData()
+
 
 mongo_connection = MongoDB('mongodb://localhost:27017/', 'zerodha', 'user', 'customer_details', 'report')
 
@@ -31,7 +33,7 @@ def register():
     if not validators.email(email):
         print("errror:email is not vaild!")
         return jsonify({'error': 'Invalid email'})
-    
+     
     if not phonenumber or len(phonenumber) != 10:
         print("errror:Phone number must be 10 digits")
         return jsonify({'error': "Phone number must be 10 digits"})
@@ -76,9 +78,10 @@ def login():
     try:
         data=request.json
         user=data.get("username")
+        password=data.get("password")
         user_data=mongo_connection.find_one({'username':user},collection_type='user')
         print("User found:", user)
-        print("Password provided:", user_data.get('password'))
+        print("Password provided:", password)
         
         
         unique=str(uuid.uuid4())
@@ -86,6 +89,7 @@ def login():
             return jsonify({'message':'invalid username and password'})
         
         updates=mongo_connection.update_one(cond={'username':user},record={"unique_id":unique},collection_type="customer_details")
+        print(updates)
         print({'message':"login sucessful","unique_id":unique})
         return jsonify({'message':"login sucessful","unique_id":unique})
     except Exception as e:
@@ -94,24 +98,27 @@ def login():
 
 
 
-@app.route("/initial",methods=['GET'])
+@app.route("/initial",methods=['POST'])
 def initial():
     try: 
-        data=request.args
-        print(f"we are inside initial message{data}")
+        json_data=request.json
 
-        #data=mongo_connection.find_one({"email":json_data.get('email')},collection_type="customer_details")
-        #unique=json_data.get("unique_id")
+        unique=json_data.get("unique_id")
 
-       # conversation_start=datetime.datetime.now()
-       # conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
+        data=mongo_connection.find_one({"unique_id":unique},collection_type="customer_details")
 
-       # redis_data.set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
+        if '_id' in data:
+            del data['_id']
+
+        conversation_start=str(datetime.datetime.now())
+        conversation_history=[{"BOT":"hi,welcome to zerodha ,how can i help you?"}]
+
+        redis_data.setex_set_data(unique,{"conversation_history":conversation_history,"user_data":data,"conversation_start":conversation_start})
         
-        return jsonify({"message":"hi,welcome to zerodha ,how can i help you?"})
+        return jsonify({"message":"Hey,welcome to zerodha ,how can i help you?"})
     except Exception as e:
         print(f"we have an exception{e}")
-        return jsonify({"message":"hi,welcome to zerodha ,how can i help you?"})
+        return jsonify({"message":"please login before you use the chat"})
 
 
 
@@ -127,16 +134,23 @@ def chat():
 
         conversation=redis_updated_data.get("conversation_history")
         user_data=redis_updated_data.get("user_data")
+        conversation.append({'user': user_text})
 
-        bot_responce=get_response(user_text,conversation,user_data)
+
+        api_responce=get_response(user_text,conversation,user_data)
+        bot_responce=api_responce
 
         if len(bot_responce.split('|'))>1:
             if bot_responce('|')[1]=='EOC':
                 mongo_connection.insert_one(redis_updated_data,collection_type='report')
 
-        conversation.append({'role': 'user', 'content': user_text})
-        conversation.append({'role': 'assistant', 'content': bot_responce})
+        conversation.append({'assistant': bot_responce})
         print(bot_responce)
+
+        new = {"conversation_history":conversation}
+        new_data = {*redis_updated_data,*new}
+
+        redis_data.setex_set_data(unique_id,new_data)
 
         return jsonify({"message":bot_responce})
     except Exception as e:
@@ -152,6 +166,6 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,port=5002)
 
 
