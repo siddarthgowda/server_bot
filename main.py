@@ -136,7 +136,7 @@ def chat():
         user_data=redis_updated_data.get("user_data")
         conversation.append({'user': user_text})
 
-
+        
         api_responce=get_response(conversation,user_data)
         bot_responce=api_responce
 
