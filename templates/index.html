@@ -67,20 +67,69 @@
         .toggle-btn:hover {
             text-decoration: underline;
         }
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+        }
+
+        .message-box {
+            height: 400px; /* Adjust as needed */
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .messages p {
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+
+        .message-input {
+            width: calc(100% - 70px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .send-button {
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .send-button:hover {
+            background-color: darkgreen;
+        }
+
         #chatIcon {
             position: fixed;
             bottom: 20px;
-            width: 100px;
             right: 20px;
-            background-color: #28a745;
+            width: 100px;
+            padding: 10px;
+            background-color: green;
             color: white;
-            border: none;
             border-radius: 50%;
-            padding: 15px;
-            font-size: 24px;
+            border: none;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
+        #chatIcon i {
+            font-size: 24px;
+        }
+
         #chatTab {
             display: none; /* Initially hidden */
             position: fixed;
@@ -135,6 +184,25 @@
 <button id="chatIcon" onclick="openChat()">
     <i class="fas fa-comments"></i>
 </button>
+
+<!-- Chat Box -->
+<div id="chatTab" class="chat-container tab">
+    <h2>Chat with Zerodha Bot</h2>
+    
+    <!-- Message History Container -->
+    <div class="message-box">
+        <div class="messages" id="chatHistory">
+            <p><strong>assistant:</strong> Hey, welcome to Zerodha, how can I help you?</p>
+            <p><strong>You:</strong> Hi</p>
+            <!-- Existing messages will be appended here by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Input and Send Button -->
+    <input type="text" id="userText" placeholder="Type a message..." class="message-input">
+    <button onclick="sendMessage()" class="send-button">Send</button>
+</div>
+
 
 <script>
     function switchTab(tabId) {
