@@ -180,28 +180,28 @@
     </div>
 </div>
 
-<!-- Chat Icon -->
-<button id="chatIcon" onclick="openChat()">
-    <i class="fas fa-comments"></i>
-</button>
+    <!-- Chat Icon -->
+    <button id="chatIcon" onclick="openChat()">
+        <i class="fas fa-comments"></i>
+    </button>
 
-<!-- Chat Box -->
-<div id="chatTab" class="chat-container tab">
-    <h2>Chat with Zerodha Bot</h2>
-    
-    <!-- Message History Container -->
-    <div class="message-box">
-        <div class="messages" id="chatHistory">
-            <p><strong>assistant:</strong> Hey, welcome to Zerodha, how can I help you?</p>
-            <p><strong>You:</strong> Hi</p>
-            <!-- Existing messages will be appended here by JavaScript -->
+    <!-- Chat Box -->
+    <div id="chatTab" class="chat-container tab">
+        <h2>Chat with Zerodha Bot</h2>
+        
+        <!-- Message History Container -->
+        <div class="message-box">
+            <div class="messages" id="chatHistory">
+                <p><strong>assistant:</strong> Hey, welcome to Zerodha, how can I help you?</p>
+                <p><strong>You:</strong> Hi</p>
+                <!-- Existing messages will be appended here by JavaScript -->
+            </div>
         </div>
+        
+        <!-- Input and Send Button -->
+        <input type="text" id="userText" placeholder="Type a message..." class="message-input">
+        <button onclick="sendMessage()" class="send-button">Send</button>
     </div>
-    
-    <!-- Input and Send Button -->
-    <input type="text" id="userText" placeholder="Type a message..." class="message-input">
-    <button onclick="sendMessage()" class="send-button">Send</button>
-</div>
 
 
 <script>
