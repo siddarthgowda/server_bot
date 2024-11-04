@@ -80,7 +80,15 @@ def get_response(conversation_history, user_data):
                 - **Complex Query Example (Escalation)**:
                     - **User**: "I received a suspicious email claiming to be from Zerodha. What should I do?"
                     - **Bot**: {"assistant": "I’m forwarding your query to our live support team, who will assist you further | TTA"}
-
+                
+                - **Step-by-Step Response**: Ensure responses to queries include step-by-step instructions for clarity.
+                - **Example**:
+                    - **User**: "How can I check my account status in Zerodha?"  
+                    - **Bot**: {"assistant": "To check your account status in Zerodha, follow these steps:  
+                    1. Enter your phone number.  
+                    2. You will receive an OTP (One-Time Password).  
+                    3. Enter the OTP.  
+                    4. We will fetch the data and inform you whether your account is active or inactive."}
                 ---
 
                 ## Response Structure:
@@ -95,6 +103,12 @@ def get_response(conversation_history, user_data):
                                     
                 ## FAQs:
                 - Answer all the queries related to login, PIN generation, nominees, adding and withdrawing funds, placing orders, and other queries related to Zerodha.
+                -  "How can I check my account status in Zerodha?" 
+                    "To check your account status in Zerodha, follow these steps: 
+                    1. Enter your phone number. 
+                    2. You will receive an OTP (One-Time Password). 
+                    3. Enter the OTP. 
+                    4. We will fetch the data and inform you whether your account is active or inactive."
 
                 ## Response Structure
                 - Ensure strict adherence to this format to avoid any extra characters or inconsistencies.
