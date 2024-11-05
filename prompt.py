@@ -213,7 +213,7 @@ def get_response(conversation_history, user_data):
         else:
             ai_response = "Sorry, I couldn't get a response from the system at the moment."
 
-        print("We have AI response as", ai_response)
+        print("Assistant", ai_response)
         return ai_response 
 
     except Exception as e:

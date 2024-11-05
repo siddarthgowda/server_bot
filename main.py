@@ -15,6 +15,16 @@ redis_data=RedisData()
 
 mongo_connection = MongoDB('mongodb://localhost:27017/', 'zerodha', 'user', 'customer_details', 'report')
 
+def list_to_string(conversation):
+    """Converts a list of conversation messages into a single string."""
+    formatted_conversation = []
+    for item in conversation:
+        if 'user' in item:
+            formatted_conversation.append(f"user: {item['user']}")
+        if 'assistant' in item:
+            formatted_conversation.append(f"Assistant: {item['assistant']}")
+    return "\n".join(formatted_conversation)
+
 
 @app.route("/register", methods=['POST'])
 def register():
@@ -135,6 +145,9 @@ def chat():
         conversation=redis_updated_data.get("conversation_history")
         user_data=redis_updated_data.get("user_data")
         conversation.append({'user': user_text})
+
+        conversation_htx = list_to_string(conversation)
+        print(f"Current conversation as string:\n{conversation_htx}")
 
         
         api_responce=get_response(conversation,user_data)
