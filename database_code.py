@@ -83,9 +83,6 @@ class MongoDB:
                 cond=convert_bson_Id(cond)
 
 
-            #if 'id' in record:
-               # record=convert_bson_Id(record)
-
             result=db.delete_one(cond)
             print("users removed sucessfully ",result.deleted_count)
             return result

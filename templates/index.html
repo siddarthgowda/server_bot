@@ -80,7 +80,7 @@
 
         .message-box {
             height: 400px; /* Adjust as needed */
-            overflow-y: auto;
+            overflow-y: auto; /* Add scroll functionality */
             padding: 10px;
             border: 1px solid #ddd;
             margin-bottom: 10px;
@@ -171,37 +171,27 @@
         <div class="toggle-btn" onclick="switchTab('registerTab')">Don't have an account? Register here</div>
     </div>
 
-    <!-- Chat Box -->
-    <div id="chatTab" class="tab">
-        <h3>Chat with Zerodha Bot</h3>
-        <div class="message" id="chatHistory"></div>
-        <input type="text" id="userText" placeholder="Type a message...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</div>
-
     <!-- Chat Icon -->
     <button id="chatIcon" onclick="openChat()">
         <i class="fas fa-comments"></i>
     </button>
 
     <!-- Chat Box -->
-    <div id="chatTab" class="chat-container tab">
-        <h2>Chat with Zerodha Bot</h2>
-        
-        <!-- Message History Container -->
-        <div class="message-box">
-            <div class="messages" id="chatHistory">
-                <p><strong>assistant:</strong> Hey, welcome to Zerodha, how can I help you?</p>
-                <p><strong>You:</strong> Hi</p>
-                <!-- Existing messages will be appended here by JavaScript -->
-            </div>
+<div id="chatTab" class="chat-container tab">
+    <h2>Chat with Zerodha Bot</h2>
+    
+    <!-- Message History Container -->
+    <div class="message-box">
+        <div class="messages" id="chatHistory">
+            <!-- Existing messages will be appended here by JavaScript -->
         </div>
-        
-        <!-- Input and Send Button -->
-        <input type="text" id="userText" placeholder="Type a message..." class="message-input">
-        <button onclick="sendMessage()" class="send-button">Send</button>
     </div>
+    
+    <!-- Input and Send Button -->
+    <input type="text" id="userText" placeholder="Type a message..." class="message-input">
+    <button onclick="sendMessage()" class="send-button">Send</button>
+</div>
+
 
 
 <script>

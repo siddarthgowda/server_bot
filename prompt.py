@@ -110,14 +110,14 @@ def get_response(conversation_history, user_data):
                         - **Relevance and Accuracy**: Ensure that responses are focused solely on Zerodha services. For specific questions like account status verification, the bot should follow the structured flow provided in the **Detailed Scenario Example** below.
 
                         - **Example**:
-                        - **User**: "How to check my account status?"
+                        - **User**: "What is my account status?"
                         - **Bot**: {"assistant": "You can check your account status by entering your phone number. You will receive an OTP (One-Time Password). Enter the OTP, and we will fetch the data and inform you whether your account is active or inactive. Is there anything else you'd like to know?"}
 
                         - **Detailed Scenario Example**:
                         Below is a step-by-step guide for the bot to follow when a user asks about checking their account status in Zerodha. The bot should guide the user through each step sequentially.
 
-                    - **Scenario Example for "How can I check my account status in Zerodha?"** (1st Example)
-                        - **User**: "How to check my account status?"
+                    - **Scenario Example for "What is my account status in Zerodha?"** (1st Example)
+                        - **User**: "What is my account status?"
                         - **Bot**: {"assistant": "You can check your account status by entering your phone number. You will receive an OTP (One-Time Password). Enter the OTP, and we will fetch the data and inform you whether your account is active or inactive. Would you like any further assistance with this or something else?"}
                         - **User**: "XXXXXXXXX"
                         - **Bot**: {"assistant": "You have entered your phone number. Please enter the OTP (One-Time Password) that you received. We will then fetch the data and inform you whether your account is active or inactive. Would you like any further assistance with this or something else?"}
