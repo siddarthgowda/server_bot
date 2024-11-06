@@ -16,14 +16,25 @@ redis_data=RedisData()
 mongo_connection = MongoDB('mongodb://localhost:27017/', 'zerodha', 'user', 'customer_details', 'report')
 
 def list_to_string(conversation):
-    """Converts a list of conversation messages into a single string."""
+    """Converts a list of conversation messages into a formatted string with distinct sections."""
     formatted_conversation = []
-    for item in conversation:
+    
+    for item in conversation[:-2]:
         if 'user' in item:
             formatted_conversation.append(f"user: {item['user']}")
-        if 'assistant' in item:
+        elif 'assistant' in item:
             formatted_conversation.append(f"Assistant: {item['assistant']}")
+    
+    recent_question = conversation[-2].get('assistant', 'No recent question')
+    formatted_conversation.append("\n\nrecent question asked by user")
+    formatted_conversation.append(f"Assistant: {recent_question}")
+    
+    recent_answer = conversation[-1].get('user', 'No recent answer')
+    formatted_conversation.append("\n\nrecent answer given by user.")
+    formatted_conversation.append(f"user: {recent_answer}")
+    
     return "\n".join(formatted_conversation)
+
 
 
 @app.route("/register", methods=['POST'])
@@ -150,21 +161,23 @@ def chat():
         print(f"Current conversation as string:\n{conversation_htx}")
 
         
-        api_responce=get_response(conversation,user_data)
-        bot_responce=api_responce
+        api_response=get_response(conversation_htx,user_data)
+        bot_response=api_response
 
-        if len(bot_responce.split('|'))>1:
-            if bot_responce('|')[1] in ['EOC','TTA']:
-                mongo_connection.insert_one(redis_updated_data,collection_type='report')
+        # if len(bot_response.split('|'))>1:
+        #     if bot_response('|')[1] in ['EOC','TTA']:
+        if "EOC" in bot_response:
+            bot_response = bot_response.replace("EOC","").replace("TTA","")
+            mongo_connection.insert_one(redis_updated_data,collection_type='report')
+            return jsonify({"message":bot_response})
 
-        conversation.append({'assistant': bot_responce})
+        conversation.append({'assistant': bot_response})
 
         new = {"conversation_history":conversation}
         new_data = {**redis_updated_data,**new}
-
         redis_data.setex_set_data(unique_id,new_data)
 
-        return jsonify({"message":bot_responce})
+        return jsonify({"message":bot_response})
     
     except Exception as e:
         print(f"we have an exception in chat as ---> {str(e)}")
@@ -180,5 +193,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True,port=5002)
-
-
